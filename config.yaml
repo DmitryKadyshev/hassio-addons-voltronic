@@ -1,7 +1,7 @@
 name: "Voltronic"
 description: "Monitor and control Voltronic based inverters from Home Assistant."
-version: "1.0.0"
-slug: "voltronic"
+version: "dev"
+slug: "voltronic-addon"
 init: false
 startup: application
 udev: true
@@ -17,8 +17,8 @@ arch:
   - armhf
   - armv7
   - i386
-hassio_api: true
-hassio_role: default
+# hassio_api: true
+# hassio_role: default
 # access: hassio
 # auth_api: true
 # apparmor: false
