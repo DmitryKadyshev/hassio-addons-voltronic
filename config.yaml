@@ -20,6 +20,10 @@ arch:
 hassio_api: true
 hassio_role: default
 access: hassio
+auth_api: true
+apparmor: false
+map:
+  - addon_config:rw
 options:
   device: /dev/hidraw0
   run_interval: 120

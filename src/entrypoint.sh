@@ -4,7 +4,7 @@ set -euo pipefail
 
 # === Пути к конфигурационным файлам ===
 INVERTER_CONF="/opt/inverter-cli/inverter.conf"
-MQTT_JSON="/opt/inverter-cli/mqtt.json"
+
 
 # === Создание директории ===
 mkdir -p /opt/inverter-cli
@@ -40,31 +40,13 @@ EOF
 
 bashio::log.info "Конфиг inverter.conf создан: $INVERTER_CONF"
 
-# === Генерация mqtt.json ===
-cat > "$MQTT_JSON" << EOF
-{
-  "server": "$MQTT_SERVER",
-  "port": "$MQTT_PORT",
-  "topic": "$MQTT_TOPIC",
-  "devicename": "$DEVICENAME",
-  "username": "$MQTT_USERNAME",
-  "password": "$MQTT_PASSWORD"
-}
-EOF
-
-bashio::log.info "Конфиг mqtt.json создан: $MQTT_JSON"
-
-# === Установка прав ===
-chmod 644 "$INVERTER_CONF" "$MQTT_JSON"
-
-
 bashio::log.info "Проверка доступности mosquitto_pub..."
 if ! command -v mosquitto_pub >/dev/null 2>&1; then
     bashio::log.fatal "mosquitto_pub не установлен. Установите пакет mosquitto-clients"
     exit 1
 fi
 
-bashio::log.info "Проверка подключения к MQTT..."
+bashio::log.info "Проверка подключения к MQTT... -h $MQTT_SERVER -p $MQTT_PORT -u $MQTT_USERNAME -P $MQTT_PASSWORD"
 if ! echo "test" | mosquitto_pub -h "$MQTT_SERVER" -p "$MQTT_PORT" -u "$MQTT_USERNAME" -P "$MQTT_PASSWORD" -t "homeassistant/test" -s; then
     bashio::log.warning "Не удалось подключиться к MQTT. Проверьте сервер, порт и учётные данные."
 else
