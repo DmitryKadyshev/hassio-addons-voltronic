@@ -1,30 +1,42 @@
 #!/usr/bin/env bashio
 
-set -euo pipefail
+# set -euo pipefail
+
+declare DEVICE
+declare RUN_INTERVAL
+declare AMPERAGE_FACTOR
+declare WATT_FACTOR
+declare QPIRI
+declare QPIWS
+declare QMOD
+declare QPIGS
+declare MQTT_SERVER
+declare MQTT_PORT
+declare MQTT_TOPIC
+declare DEVICENAME
+declare MQTT_USERNAME
+declare MQTT_PASSWORD
 
 # === Пути к конфигурационным файлам ===
 INVERTER_CONF="/opt/inverter-cli/inverter.conf"
 
 
-# === Создание директории ===
-mkdir -p /opt/inverter-cli
-
 # === Чтение настроек из конфигурации аддона ===
-DEVICE=$(bashio::config "device")
-RUN_INTERVAL=$(bashio::config "run_interval")
-AMPERAGE_FACTOR=$(bashio::config "amperage_factor")
-WATT_FACTOR=$(bashio::config "watt_factor")
-QPIRI=$(bashio::config "qpiri")
-QPIWS=$(bashio::config "qpiws")
-QMOD=$(bashio::config "qmod")
-QPIGS=$(bashio::config "qpigs")
+DEVICE=$(bashio::config 'device')
+RUN_INTERVAL=$(bashio::config 'run_interval')
+AMPERAGE_FACTOR=$(bashio::config 'amperage_factor')
+WATT_FACTOR=$(bashio::config 'watt_factor')
+QPIRI=$(bashio::config 'qpiri')
+QPIWS=$(bashio::config 'qpiws')
+QMOD=$(bashio::config 'qmod')
+QPIGS=$(bashio::config 'qpigs')
 
-MQTT_SERVER=$(bashio::config "mqtt_server")
-MQTT_PORT=$(bashio::config "mqtt_port")
-MQTT_TOPIC=$(bashio::config "mqtt_topic")
-DEVICENAME=$(bashio::config "devicename")
-MQTT_USERNAME=$(bashio::config "mqtt_username")
-MQTT_PASSWORD=$(bashio::config "mqtt_password")
+MQTT_SERVER=$(bashio::config 'mqtt_server')
+MQTT_PORT=$(bashio::config 'mqtt_port')
+MQTT_TOPIC=$(bashio::config 'mqtt_topic')
+DEVICENAME=$(bashio::config 'devicename')
+MQTT_USERNAME=$(bashio::config 'mqtt_username')
+MQTT_PASSWORD=$(bashio::config 'mqtt_password')
 
 # === Генерация inverter.conf ===
 cat > "$INVERTER_CONF" << EOF
@@ -39,6 +51,8 @@ qpigs=$QPIGS
 EOF
 
 bashio::log.info "Конфиг inverter.conf создан: $INVERTER_CONF"
+
+cat $INVERTER_CONF
 
 bashio::log.info "Проверка доступности mosquitto_pub..."
 if ! command -v mosquitto_pub >/dev/null 2>&1; then

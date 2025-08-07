@@ -33,12 +33,12 @@ options:
   qpiws: 36
   qmod: 5
   qpigs: 110
-  mqtt_server: "core-mosquitto"
+  mqtt_server: "127.0.0.1"
   mqtt_port: 1883
   mqtt_topic: "homeassistant"
   devicename: "voltronic"
-  mqtt_username: "voltronic_user"
-  mqtt_password: "voltronic_password"
+  mqtt_username: "voltronic"
+  mqtt_password: "voltronic"
 schema:
   device: str
   run_interval: int
