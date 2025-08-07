@@ -57,6 +57,20 @@ bashio::log.info "Конфиг mqtt.json создан: $MQTT_JSON"
 # === Установка прав ===
 chmod 644 "$INVERTER_CONF" "$MQTT_JSON"
 
+
+bashio::log.info "Проверка доступности mosquitto_pub..."
+if ! command -v mosquitto_pub >/dev/null 2>&1; then
+    bashio::log.fatal "mosquitto_pub не установлен. Установите пакет mosquitto-clients"
+    exit 1
+fi
+
+bashio::log.info "Проверка подключения к MQTT..."
+if ! echo "test" | mosquitto_pub -h "$MQTT_SERVER" -p "$MQTT_PORT" -u "$MQTT_USERNAME" -P "$MQTT_PASSWORD" -t "homeassistant/test" -s; then
+    bashio::log.warning "Не удалось подключиться к MQTT. Проверьте сервер, порт и учётные данные."
+else
+    bashio::log.info "Подключение к MQTT успешно."
+fi
+
 # === Функция: регистрация MQTT-сенсоров (аналог mqtt-init.sh) ===
 mqtt_init() {
     bashio::log.info "Регистрация MQTT-сенсоров (аналог mqtt-init.sh)..."
