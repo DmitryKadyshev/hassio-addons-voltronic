@@ -21,7 +21,7 @@ hassio_api: true
 hassio_role: default
 # access: hassio
 # auth_api: true
-apparmor: false
+# apparmor: false
 map:
   - addon_config:rw
 options:
