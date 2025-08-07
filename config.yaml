@@ -17,6 +17,9 @@ arch:
   - armhf
   - armv7
   - i386
+hassio_api: true
+hassio_role: default
+access: hassio
 options:
   device: /dev/hidraw0
   run_interval: 120
@@ -30,8 +33,8 @@ options:
   mqtt_port: 1883
   mqtt_topic: "homeassistant"
   devicename: "voltronic"
-  mqtt_username: "voltronic_username"
-  mqtt_password: "voltronic_pwd"
+  mqtt_username: "voltronic_user"
+  mqtt_password: "voltronic_password"
 schema:
   device: str
   run_interval: int
