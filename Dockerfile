@@ -43,7 +43,7 @@ LABEL \
 RUN apk add --no-cache bash mosquitto-clients jq
 
 # Копируем s6-службы
-COPY src/rootfs /
+COPY src/rootfs/ /
 
 # Копируем скрипты
 COPY src/mqtt-init.sh /opt/inverter-mqtt/
