@@ -1,5 +1,7 @@
 #!/usr/bin/env bashio
 
+bashio::log.info "Доступные параметры: $(bashio::config)"
+
 # set -euo pipefail
 
 declare DEVICE
