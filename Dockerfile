@@ -1,16 +1,7 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM} AS build
 
-# SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-# ENV XDG_CONFIG_HOME="/config"
-
-
-
-
-
-
-
-RUN apk add --no-cache build-base cmake  libstdc++-dev
+RUN apk add --no-cache build-base cmake libstdc++-dev
 ADD src/inverter-cli /src/inverter-cli
 RUN cd /src/inverter-cli \
    && cmake -Bbuild -H. -DCMAKE_INSTALL_PREFIX=/opt/inverter-cli \
@@ -18,9 +9,6 @@ RUN cd /src/inverter-cli \
     && cmake --install build
 
 FROM $BUILD_FROM AS final
-
-# SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-# ENV XDG_CONFIG_HOME="/config"
 
 # Build arguments
 ARG BUILD_ARCH
@@ -51,12 +39,19 @@ LABEL \
     org.opencontainers.image.revision=${BUILD_REF} \
     org.opencontainers.image.version=${BUILD_VERSION}
 
-
-
-ENV LANG=C.UTF-8
+# Установка зависимостей
 RUN apk add --no-cache bash mosquitto-clients jq
-WORKDIR /opt/inverter-cli
-COPY src/entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-COPY --from=build /opt/inverter-cli/bin /opt/inverter-cli
-CMD ["/entrypoint.sh"]
+
+# Копируем s6-службы
+COPY src/rootfs /
+
+# Копируем скрипты
+COPY src/mqtt-init.sh /opt/inverter-mqtt/
+COPY src/mqtt-push.sh /opt/inverter-mqtt/
+RUN chmod +x /opt/inverter-mqtt/*.sh
+
+# Копируем бинарник inverter-cli
+COPY --from=build /opt/inverter-cli/bin /opt/inverter-cli/bin
+
+# Устанавливаем права на скрипты s6
+RUN chmod +x /etc/s6-overlay/s6-rc.d/inverter/run
