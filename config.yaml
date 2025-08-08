@@ -1,9 +1,11 @@
 name: "Voltronic"
-description: "Monitor and control Voltronic based inverters from Home Assistant."
 version: "dev"
 slug: "voltronic-addon"
+description: "Monitor and control Voltronic based inverters from Home Assistant."
+url: https://github.com/DmitryKadyshev/hassio-addons-voltronic
+codenotary: DmitryKadyshev
 init: false
-startup: application
+# startup: application
 udev: true
 hassio_api: true
 homeassistant_api: true
@@ -21,21 +23,6 @@ arch:
   - i386
 map:
   - addon_config:rw
-options:
-  device: /dev/hidraw0
-  run_interval: 120
-  amperage_factor: 1.0
-  watt_factor: 1.01
-  qpiri: 97
-  qpiws: 36
-  qmod: 5
-  qpigs: 110
-  mqtt_server: "127.0.0.1"
-  mqtt_port: 1883
-  mqtt_topic: "homeassistant"
-  devicename: "voltronic"
-  mqtt_username: "voltronic"
-  mqtt_password: "voltronic"
 schema:
   device: str
   run_interval: int
@@ -51,3 +38,18 @@ schema:
   devicename: str
   mqtt_username: str
   mqtt_password: str
+options:
+  device: /dev/hidraw0
+  run_interval: 120
+  amperage_factor: 1.0
+  watt_factor: 1.01
+  qpiri: 97
+  qpiws: 36
+  qmod: 5
+  qpigs: 110
+  mqtt_server: 127.0.0.1
+  mqtt_port: 1883
+  mqtt_topic: homeassistant
+  devicename: voltronic
+  mqtt_username: voltronic
+  mqtt_password: voltronic
