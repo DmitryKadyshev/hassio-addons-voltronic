@@ -1,5 +1,7 @@
 #!/usr/bin/env bashio
-
+set +u
+echo "Start"
+printenv
 bashio::log.info "Доступные параметры: $(bashio::config)"
 
 # set -euo pipefail
