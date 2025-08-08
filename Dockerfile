@@ -54,4 +54,6 @@ RUN chmod +x /opt/inverter-mqtt/*.sh
 COPY --from=build /opt/inverter-cli/bin /opt/inverter-cli/bin
 
 # Устанавливаем права на скрипты s6
-RUN chmod +x /etc/s6-overlay/s6-rc.d/inverter/run
+RUN chmod +x /etc/s6-overlay/s6-rc.d/inverter/run && \
+    chmod +x /etc/s6-overlay/s6-rc.d/inverter/finish && \
+    chmod +x /etc/s6-overlay/s6-rc.d/inverter/type
