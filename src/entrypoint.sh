@@ -60,8 +60,7 @@ cat $INVERTER_CONF
 
 bashio::log.info "Проверка доступности mosquitto_pub..."
 if ! command -v mosquitto_pub >/dev/null 2>&1; then
-    bashio::log.fatal "mosquitto_pub не установлен. Установите пакет mosquitto-clients"
-    exit 1
+    bashio::log.fatal "mosquitto_pub не установлен. Установите пакет mosquitto-clients" 
 fi
 
 bashio::log.info "Проверка подключения к MQTT... -h $MQTT_SERVER -p $MQTT_PORT -u $MQTT_USERNAME -P $MQTT_PASSWORD"
