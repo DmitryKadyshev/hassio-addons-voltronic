@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bashio
+# finish скрипт для s6-overlay
+
+exec 2>&1
+bashio::log.info "Stopping Voltronic addon..."

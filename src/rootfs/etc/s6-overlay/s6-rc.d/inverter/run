@@ -1,0 +1,39 @@
+#!/usr/bin/with-contenv bashio
+# run скрипт для s6-overlay
+
+exec 2>&1
+
+# Инициализация параметров из конфигурации
+DEVICE=$(bashio::config 'device')
+RUN_INTERVAL=$(bashio::config 'run_interval')
+AMPERAGE_FACTOR=$(bashio::config 'amperage_factor')
+WATT_FACTOR=$(bashio::config 'watt_factor')
+MQTT_SERVER=$(bashio::config 'mqtt_server')
+MQTT_PORT=$(bashio::config 'mqtt_port')
+MQTT_TOPIC=$(bashio::config 'mqtt_topic')
+MQTT_DEVICENAME=$(bashio::config 'devicename')
+MQTT_USERNAME=$(bashio::config 'mqtt_username')
+MQTT_PASSWORD=$(bashio::config 'mqtt_password')
+
+# Экспорт параметров
+export DEVICE
+export RUN_INTERVAL
+export AMPERAGE_FACTOR
+export WATT_FACTOR
+export MQTT_SERVER
+export MQTT_PORT
+export MQTT_TOPIC
+export MQTT_DEVICENAME
+export MQTT_USERNAME
+export MQTT_PASSWORD
+
+# Регистрация MQTT топиков
+bashio::log.info "Registering MQTT topics..."
+/opt/inverter-mqtt/mqtt-init.sh
+
+# Основной цикл работы
+bashio::log.info "Starting main loop with ${RUN_INTERVAL} second interval"
+while true; do
+    /opt/inverter-mqtt/mqtt-push.sh
+    sleep "${RUN_INTERVAL}"
+done
