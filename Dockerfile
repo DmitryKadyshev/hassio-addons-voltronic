@@ -43,7 +43,7 @@ LABEL \
 RUN apk add --no-cache bash mosquitto-clients jq
 
 # Копируем s6-службы
-COPY src/rootfs /
+COPY rootfs /
 
 # Копируем скрипты
 COPY src/mqtt-init.sh /opt/inverter-mqtt/
@@ -54,6 +54,8 @@ RUN chmod +x /opt/inverter-mqtt/*.sh
 COPY --from=build /opt/inverter-cli/bin /opt/inverter-cli/bin
 
 # Устанавливаем права на скрипты s6
-RUN chmod +x /etc/s6-overlay/s6-rc.d/inverter/run && \
-    chmod +x /etc/s6-overlay/s6-rc.d/inverter/finish && \
-    chmod +x /etc/s6-overlay/s6-rc.d/inverter/type
+RUN chmod +x /etc/services.d/inverter/run && \
+    chmod +x /etc/services.d/inverter/finish
+
+# Точка входа s6-overlay
+ENTRYPOINT ["/init"]
