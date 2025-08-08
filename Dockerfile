@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:latest
+ARG BUILD_FROM
 FROM ${BUILD_FROM} AS build
 
 # SHELL ["/bin/bash", "-o", "pipefail", "-c"]

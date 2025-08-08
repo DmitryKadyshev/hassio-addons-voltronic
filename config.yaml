@@ -5,6 +5,8 @@ slug: "voltronic-addon"
 init: false
 startup: application
 udev: true
+hassio_api: true
+homeassistant_api: true
 devices:
   - /dev/hidraw0
   - /dev/hidraw1
