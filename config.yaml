@@ -2,8 +2,6 @@ name: "Voltronic"
 version: "dev"
 slug: "voltronic-addon"
 description: "Monitor and control Voltronic based inverters from Home Assistant."
-url: https://github.com/DmitryKadyshev/hassio-addons-voltronic
-codenotary: DmitryKadyshev
 init: false
 # startup: application
 udev: true
