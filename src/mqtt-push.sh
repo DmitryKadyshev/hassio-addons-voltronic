@@ -1,5 +1,13 @@
 #!/usr/bin/with-contenv bashio
 
+# Получаем параметры из аргументов
+MQTT_SERVER=$1
+MQTT_PORT=$2
+MQTT_TOPIC=$3
+MQTT_DEVICENAME=$4
+MQTT_USERNAME=$5
+MQTT_PASSWORD=$6
+
 pushMQTTData() {
     local name=$1
     local value=$2
@@ -17,11 +25,7 @@ pushMQTTData() {
 }
 
 # Получаем данные с инвертера
-INVERTER_DATA=$(timeout 10 /opt/inverter-cli/bin/inverter_poller \
-    -d "${DEVICE}" \
-    -a "${AMPERAGE_FACTOR}" \
-    -w "${WATT_FACTOR}" \
-    -1)
+INVERTER_DATA=$(timeout 10 /opt/inverter-cli/bin/inverter_poller -1)
 
 # Логируем полученные данные
 TIME=$(date +"%Y-%m-%d %H:%M:%S")

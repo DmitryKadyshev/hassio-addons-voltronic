@@ -15,25 +15,25 @@ MQTT_DEVICENAME=$(bashio::config 'devicename')
 MQTT_USERNAME=$(bashio::config 'mqtt_username')
 MQTT_PASSWORD=$(bashio::config 'mqtt_password')
 
-# Экспорт параметров
-export DEVICE
-export RUN_INTERVAL
-export AMPERAGE_FACTOR
-export WATT_FACTOR
-export MQTT_SERVER
-export MQTT_PORT
-export MQTT_TOPIC
-export MQTT_DEVICENAME
-export MQTT_USERNAME
-export MQTT_PASSWORD
-
 # Регистрация MQTT топиков
 bashio::log.info "Registering MQTT topics..."
-/opt/inverter-mqtt/mqtt-init.sh
+/opt/inverter-mqtt/mqtt-init.sh \
+    "${MQTT_SERVER}" \
+    "${MQTT_PORT}" \
+    "${MQTT_TOPIC}" \
+    "${MQTT_DEVICENAME}" \
+    "${MQTT_USERNAME}" \
+    "${MQTT_PASSWORD}"
 
 # Основной цикл работы
 bashio::log.info "Starting main loop with ${RUN_INTERVAL} second interval"
 while true; do
-    /opt/inverter-mqtt/mqtt-push.sh
+    /opt/inverter-mqtt/mqtt-push.sh \
+        "${MQTT_SERVER}" \
+        "${MQTT_PORT}" \
+        "${MQTT_TOPIC}" \
+        "${MQTT_DEVICENAME}" \
+        "${MQTT_USERNAME}" \
+        "${MQTT_PASSWORD}"
     sleep "${RUN_INTERVAL}"
 done

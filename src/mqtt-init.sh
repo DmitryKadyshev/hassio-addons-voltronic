@@ -1,5 +1,13 @@
 #!/usr/bin/with-contenv bashio
 
+# Получаем параметры из аргументов
+MQTT_SERVER=$1
+MQTT_PORT=$2
+MQTT_TOPIC=$3
+MQTT_DEVICENAME=$4
+MQTT_USERNAME=$5
+MQTT_PASSWORD=$6
+
 registerTopic() {
     local name=$1
     local unit=$2
