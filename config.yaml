@@ -1,5 +1,5 @@
 name: "Voltronic"
-version: "dev"
+version: "0.1.0"
 slug: "voltronic-addon"
 description: "Monitor and control Voltronic based inverters from Home Assistant."
 init: false
@@ -16,8 +16,6 @@ arch:
   - armhf
   - armv7
   - i386
-map:
-  - config:rw
 schema:
   device: str
   run_interval: int
@@ -35,16 +33,16 @@ schema:
   mqtt_password: str
 options:
   device: /dev/hidraw0
-  run_interval: 120
+  run_interval: 5
   amperage_factor: 1.0
-  watt_factor: 1.01
+  watt_factor: 1.00
   qpiri: 97
   qpiws: 36
   qmod: 5
   qpigs: 110
-  mqtt_server: 192.168.1.6
+  mqtt_server: mosquitto
   mqtt_port: 1883
-  mqtt_topic: homeassistant
+  mqtt_topic: homeassistants
   devicename: voltronic
   mqtt_username: voltronic
   mqtt_password: voltronic
