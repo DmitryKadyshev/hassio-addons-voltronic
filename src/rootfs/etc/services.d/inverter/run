@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bashio
 # run скрипт для s6-overlay
 
-exec 2>&1
+# exec 2>&1
 
 
 # === Чтение настроек из конфигурации аддона ===
