@@ -7,10 +7,10 @@ MQTT_TOPIC=$3
 MQTT_DEVICENAME=$4
 MQTT_USERNAME=$5
 MQTT_PASSWORD=$6
-bashio::log.info "mqqt-push.sh ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD}"
+# bashio::log.info "mqqt-push.sh ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD}"
 
 pushMQTTData () {
-    bashio::log.info "pushMQTTData ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD} ${1} ${2}"
+    # bashio::log.info "pushMQTTData ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD} ${1} ${2}"
     mosquitto_pub \
         -h $MQTT_SERVER \
         -p $MQTT_PORT \
@@ -22,10 +22,10 @@ pushMQTTData () {
 
 }
 
-bashio::log.info "Pull data"
+# bashio::log.info "Pull data"
 INVERTER_DATA=`timeout 10 /opt/inverter-cli/bin/inverter_poller -1`
 
-bashio::log.info "${INVERTER_DATA}"
+# bashio::log.info "${INVERTER_DATA}"
 #####################################################################################
 
 Inverter_mode=`echo $INVERTER_DATA | jq '.Inverter_mode' -r`

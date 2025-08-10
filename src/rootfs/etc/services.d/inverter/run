@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bashio
 # run скрипт для s6-overlay
 
-# exec 2>&1
+exec 2>&1
 
 
 # === Чтение настроек из конфигурации аддона ===
@@ -37,7 +37,7 @@ qmod=$QMOD
 qpigs=$QPIGS
 EOF
 
-cat ${INVERTER_CONF} 
+# cat ${INVERTER_CONF} 
 
 # Регистрация MQTT топиков
 bashio::log.info "Registering MQTT topics..."
@@ -52,7 +52,7 @@ bashio::log.info "Registering MQTT topics..."
 # Основной цикл работы
 bashio::log.info "Starting main loop with ${RUN_INTERVAL} second interval"
 while true; do
-    bashio::log.info "Run push"
+    # bashio::log.info "Run push"
     /opt/inverter-mqtt/mqtt-push.sh \
         "${MQTT_SERVER}" \
         "${MQTT_PORT}" \
@@ -60,8 +60,8 @@ while true; do
         "${MQTT_DEVICENAME}" \
         "${MQTT_USERNAME}" \
         "${MQTT_PASSWORD}"
-    bashio::log.info "End push"
+    # bashio::log.info "End push"
     sleep "${RUN_INTERVAL}"
-    bashio::log.info "End sleep"
+    # bashio::log.info "End sleep"
 done
-bashio::log.info "End loop"
+# bashio::log.info "End loop"
