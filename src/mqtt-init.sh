@@ -8,7 +8,7 @@ MQTT_DEVICENAME=$4
 MQTT_USERNAME=$5
 MQTT_PASSWORD=$6
 
-bashio::log.info "Init Start ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD}"
+# bashio::log.info "Init Start ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD}"
 
 registerTopic () {
     mosquitto_pub \
@@ -23,7 +23,7 @@ registerTopic () {
             \"state_topic\": \"$MQTT_TOPIC/sensor/"$MQTT_DEVICENAME"_$1\",
             \"icon\": \"mdi:$3\"
         }"
-        bashio::log.info "registerTopic ${1} ${2} ${3}"
+        # bashio::log.info "registerTopic ${1} ${2} ${3}"
 }
 
 registerInverterRawCMD () {
@@ -37,7 +37,7 @@ registerInverterRawCMD () {
             \"name\": \""$MQTT_DEVICENAME"\",
             \"state_topic\": \"$MQTT_TOPIC/sensor/$MQTT_DEVICENAME\"
         }"
-         bashio::log.info "registerInverterRawCMD"
+        #  bashio::log.info "registerInverterRawCMD"
 }
 
 registerTopic "Inverter_mode" "" "solar-power" # 1 = Power_On, 2 = Standby, 3 = Line, 4 = Battery, 5 = Fault, 6 = Power_Saving, 7 = Unknown
