@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bashio
 # run скрипт для s6-overlay
 
-# exec 2>&1
+exec 2>&1
 
 
 # === Чтение настроек из конфигурации аддона ===
@@ -64,4 +64,3 @@ while true; do
     sleep "${RUN_INTERVAL}"
     # bashio::log.info "End sleep"
 done
-# bashio::log.info "End loop"
