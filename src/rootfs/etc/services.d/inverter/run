@@ -1,0 +1,67 @@
+#!/usr/bin/with-contenv bashio
+# run скрипт для s6-overlay
+
+# exec 2>&1
+
+
+# === Чтение настроек из конфигурации аддона ===
+DEVICE=$(bashio::config 'device')
+RUN_INTERVAL=$(bashio::config 'run_interval')
+AMPERAGE_FACTOR=$(bashio::config 'amperage_factor')
+WATT_FACTOR=$(bashio::config 'watt_factor')
+QPIRI=$(bashio::config 'qpiri')
+QPIWS=$(bashio::config 'qpiws')
+QMOD=$(bashio::config 'qmod')
+QPIGS=$(bashio::config 'qpigs')
+
+MQTT_SERVER=$(bashio::config 'mqtt_server')
+MQTT_PORT=$(bashio::config 'mqtt_port')
+MQTT_TOPIC=$(bashio::config 'mqtt_topic')
+MQTT_DEVICENAME=$(bashio::config 'devicename')
+MQTT_USERNAME=$(bashio::config 'mqtt_username')
+MQTT_PASSWORD=$(bashio::config 'mqtt_password')
+
+
+# === Пути к конфигурационным файлам ===
+INVERTER_CONF="/etc/inverter/inverter.conf"
+
+# === Генерация inverter.conf ===
+cat > "$INVERTER_CONF" << EOF
+device=$DEVICE
+run_interval=$RUN_INTERVAL
+amperage_factor=$AMPERAGE_FACTOR
+watt_factor=$WATT_FACTOR
+qpiri=$QPIRI
+qpiws=$QPIWS
+qmod=$QMOD
+qpigs=$QPIGS
+EOF
+
+cat ${INVERTER_CONF} 
+
+# Регистрация MQTT топиков
+bashio::log.info "Registering MQTT topics..."
+/opt/inverter-mqtt/mqtt-init.sh \
+    "${MQTT_SERVER}" \
+    "${MQTT_PORT}" \
+    "${MQTT_TOPIC}" \
+    "${MQTT_DEVICENAME}" \
+    "${MQTT_USERNAME}" \
+    "${MQTT_PASSWORD}"
+
+# Основной цикл работы
+bashio::log.info "Starting main loop with ${RUN_INTERVAL} second interval"
+while true; do
+    bashio::log.info "Run push"
+    /opt/inverter-mqtt/mqtt-push.sh \
+        "${MQTT_SERVER}" \
+        "${MQTT_PORT}" \
+        "${MQTT_TOPIC}" \
+        "${MQTT_DEVICENAME}" \
+        "${MQTT_USERNAME}" \
+        "${MQTT_PASSWORD}"
+    bashio::log.info "End push"
+    sleep "${RUN_INTERVAL}"
+    bashio::log.info "End sleep"
+done
+bashio::log.info "End loop"
