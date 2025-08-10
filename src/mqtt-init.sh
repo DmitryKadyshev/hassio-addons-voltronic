@@ -23,7 +23,7 @@ registerTopic () {
             \"state_topic\": \"$MQTT_TOPIC/sensor/"$MQTT_DEVICENAME"_$1\",
             \"icon\": \"mdi:$3\"
         }"
-        # bashio::log.info "registerTopic ${1} ${2} ${3}"
+        bashio::log.info "registerTopic ${1} ${2} ${3}"
 }
 
 registerInverterRawCMD () {

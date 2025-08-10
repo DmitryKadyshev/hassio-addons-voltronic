@@ -10,7 +10,7 @@ MQTT_PASSWORD=$6
 # bashio::log.info "mqqt-push.sh ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD}"
 
 pushMQTTData () {
-    # bashio::log.info "pushMQTTData ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD} ${1} ${2}"
+    bashio::log.info "pushMQTTData ${1} ${2}"
     mosquitto_pub \
         -h $MQTT_SERVER \
         -p $MQTT_PORT \
