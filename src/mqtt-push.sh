@@ -10,16 +10,21 @@ MQTT_PASSWORD=$6
 # bashio::log.info "mqqt-push.sh ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD}"
 
 pushMQTTData () {
-    bashio::log.info "pushMQTTData ${1} ${2}"
-    mosquitto_pub \
-        -h $MQTT_SERVER \
-        -p $MQTT_PORT \
-        -u "$MQTT_USERNAME" \
-        -P "$MQTT_PASSWORD" \
-        -t "$MQTT_TOPIC/sensor/"$MQTT_DEVICENAME"_$1" \
-        -m "$2"
-    
-
+    if [ -n "$2" ] && [ "$2" != "null" ]; then
+        bashio::log.info "pushMQTTData ${1} ${2}"
+        mosquitto_pub -i "${MQTT_DEVICENAME}_${1}" -r -t "${MQTT_TOPIC}/sensor/${MQTT_DEVICENAME}_${1}/availability" -m "online"
+        mosquitto_pub -i "${MQTT_DEVICENAME}_${1}" \
+            -h "$MQTT_SERVER" \
+            -p "$MQTT_PORT" \
+            -u "$MQTT_USERNAME" \
+            -P "$MQTT_PASSWORD" \
+            -r \
+            -t "${MQTT_TOPIC}/sensor/${MQTT_DEVICENAME}_${1}" \
+            -m "$2" || bashio::log.warning "Failed to publish: ${name}"
+    else
+        # Отправка статуса "offline", если данные отсутствуют
+        mosquitto_pub -i "${MQTT_DEVICENAME}_${1}" -t "${MQTT_TOPIC}/sensor/${MQTT_DEVICENAME}_${1}/availability" -m "offline"
+    fi
 }
 
 # bashio::log.info "Pull data"
