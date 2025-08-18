@@ -11,27 +11,32 @@ MQTT_PASSWORD=$6
 # bashio::log.info "Init Start ${MQTT_SERVER} ${MQTT_PORT} ${MQTT_TOPIC} ${MQTT_DEVICENAME} ${MQTT_USERNAME} ${MQTT_PASSWORD}"
 
 registerTopic () {
-    mosquitto_pub \
+    bashio::log.info "registerTopic ${1} ${2} ${3}"
+    mosquitto_pub -i "${MQTT_DEVICENAME}_${1}" \
         -h $MQTT_SERVER \
         -p $MQTT_PORT \
         -u "$MQTT_USERNAME" \
         -P "$MQTT_PASSWORD" \
         -t "$MQTT_TOPIC/sensor/"$MQTT_DEVICENAME"_$1/config" \
+        -r \
         -m "{
             \"name\": \""$MQTT_DEVICENAME"_$1\",
             \"unit_of_measurement\": \"$2\",
             \"state_topic\": \"$MQTT_TOPIC/sensor/"$MQTT_DEVICENAME"_$1\",
-            \"icon\": \"mdi:$3\"
-        }"
-        bashio::log.info "registerTopic ${1} ${2} ${3}"
+            \"icon\": \"mdi:$3\",
+            \"payload_available\": \"online\",
+            \"payload_not_available\": \"offline\"
+        }" || bashio::log.error "Failed to register topic:  ${1} ${2} ${3}"
+        
 }
 
 registerInverterRawCMD () {
-    mosquitto_pub \
+    mosquitto_pub -i "${MQTT_DEVICENAME}" \
         -h $MQTT_SERVER \
         -p $MQTT_PORT \
         -u "$MQTT_USERNAME" \
         -P "$MQTT_PASSWORD" \
+        -r \
         -t "$MQTT_TOPIC/sensor/$MQTT_DEVICENAME/config" \
         -m "{
             \"name\": \""$MQTT_DEVICENAME"\",
@@ -74,4 +79,4 @@ registerTopic "Charger_source_priority" "" "solar-power"
 registerTopic "Battery_redischarge_voltage" "V" "battery-negative"
 
 # Add in a separate topic so we can send raw commands from assistant back to the inverter via MQTT (such as changing power modes etc)...
-registerInverterRawCMD
+# registerInverterRawCMD
