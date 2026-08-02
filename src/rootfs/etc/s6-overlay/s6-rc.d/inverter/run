@@ -1,0 +1,9 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Voltronic add-on — unified poll + MQTT publish daemon
+# ==============================================================================
+
+bashio::log.info 'Starting Voltronic...'
+
+exec python3 -m voltronic
