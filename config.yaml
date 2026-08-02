@@ -1,5 +1,9 @@
 name: "Voltronic"
+<<<<<<< HEAD
 version: "0.1.1.2"
+=======
+version: "0.2.0"
+>>>>>>> 83bad8c (Rewrite as unified Python daemon on s6-rc.d)
 slug: "REDACTED-addon"
 description: "Monitor and control Voltronic based inverters from Home Assistant."
 init: false
