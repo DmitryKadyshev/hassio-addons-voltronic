@@ -1,0 +1,8 @@
+# Project Architecture Rules (Non-Obvious Only)
+
+- **Single-process, single-threaded loop** in [`__main__.py`](../../../src/app/voltronic/__main__.py:20): each cycle issues `QMOD` → `QPIGS` → `QPIRI` → `QPIWS` sequentially over one persistent fd. Do not parallelize inverter reads — the device and fd are shared and not thread-safe.
+- The inverter fd is **opened once and reused** across queries ([`inverter.py`](../../../src/app/voltronic/inverter.py:33)); the connection is the sole consumer. If the fd breaks, `query()` closes it and returns `None`, and the next call lazily reopens.
+- MQTT is a single long-lived paho client with LWT; HA discovery configs are published exactly once on first successful connect ([`__main__.py`](../../../src/app/voltronic/__main__.py:74)). State and availability share that one connection — there is no per-field connection.
+- `parser.SENSORS` + `build_state()` are a **frozen contract** with existing HA entity IDs (`devicename_<sensor>`). It is the single source of truth used by both discovery and state publishing. Changing it silently breaks users' automations/dashboards.
+- The whole system is a direct Python port of legacy C++ (`inverter.cpp`/`main.cpp`); field indexes (e.g. QPIRI token 18 being a literal `-`) and the CRC come from that port and must not be "cleaned up".
+- Hardware dependency is real: the add-on requires physical inverter access via `config.yaml` `devices: /dev/hidraw*`. TTY serial (2400 8N1) is configured best-effort only when the device is a TTY; hidraw is used raw. No simulator exists.
