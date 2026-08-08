@@ -1,5 +1,5 @@
 name: "Voltronic"
-version: "0.2.0"
+version: "0.3.0"
 slug: "REDACTED-addon"
 description: "Monitor and control Voltronic based inverters from Home Assistant."
 init: false

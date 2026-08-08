@@ -92,7 +92,8 @@ class MqttClient:
         for spec in sensors:
             topic = f"{self._base}/sensor/{self._devicename}_{spec.name}/config"
             payload = {
-                "name": f"{self._devicename}_{spec.name}",
+                "name": spec.friendly_name or f"{self._devicename}_{spec.name}",
+                "object_id": f"{self._devicename}_{spec.name}",
                 "unique_id": f"{self._devicename}_{spec.name}",
                 "state_topic": f"{self._base}/sensor/{self._devicename}_{spec.name}",
                 "availability_topic": self._availability_topic,
