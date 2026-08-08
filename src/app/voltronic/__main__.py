@@ -12,7 +12,7 @@ from .config import Config
 from .inverter import Inverter
 from .mqtt import MqttClient
 
-SW_VERSION = "0.3.0"
+SW_VERSION = "0.4.0"
 
 log = logging.getLogger("REDACTED")
 
