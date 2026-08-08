@@ -12,7 +12,97 @@ from typing import Callable, Optional
 
 
 # QMOD single-char → int code, matching cInverter::GetMode in inverter.cpp.
+# Extends the NUT operational modes to cover the letters the inverter can answer.
 MODE_MAP = {"P": 1, "S": 2, "L": 3, "B": 4, "F": 5, "H": 6}
+
+# Human-readable (RU) names for the operational mode returned by QMOD.
+MODE_NAMES = {
+    1: "Включение",
+    2: "Ожидание",
+    3: "Сеть",
+    4: "АКБ",
+    5: "Ошибка",
+    6: "Отключение",
+}
+
+# QPIRI output source priority (Program 01) → RU label.
+OUT_SOURCE_PRIORITY_NAMES = {
+    0: "От сети (первый)",
+    1: "Солнечная (первая)",
+    2: "СБУ (Solar-Battery-Utility)",
+}
+
+# QPIRI charger source priority (Program 16) → RU label.
+CHARGER_SOURCE_PRIORITY_NAMES = {
+    0: "От сети (первый)",
+    1: "Солнечная (первая)",
+    2: "Солнечная и сеть",
+    3: "Только солнечная",
+}
+
+# QPIWS 64-bit warning mask → RU label. Index (1-based) is the warning number.
+# Source: https://networkupstools.org/protocols/voltronic.html  "Warnings".
+WARNING_NAMES: dict[int, str] = {
+    1: "АКБ отключена",
+    2: "Нейтраль не подключена",
+    3: "Ошибка заземления",
+    4: "Неверный порядок фаз",
+    5: "Неверный порядок фаз в байпасе",
+    6: "Нестабильная частота сети в байпасе",
+    7: "Перезаряд АКБ",
+    8: "Низкий заряд АКБ",
+    9: "Перегрузка",
+    10: "Неисправность вентилятора",
+    11: "Включён EPO",
+    12: "Невозможно включить инвертор",
+    13: "Перегрев",
+    14: "Неисправность зарядного устройства",
+    15: "Дистанционное автоматическое отключение",
+    16: "Не работает предохранитель L1",
+    17: "Не работает предохранитель L2",
+    18: "Не работает предохранитель L3",
+    19: "Аномалия положительного PFC в L1",
+    20: "Аномалия отрицательного PFC в L1",
+    21: "Аномалия положительного PFC в L2",
+    22: "Аномалия отрицательного PFC в L2",
+    23: "Аномалия положительного PFC в L3",
+    24: "Аномалия отрицательного PFC в L3",
+    25: "Неисправность шины CAN",
+    26: "Неисправность цепи синхросигнала",
+    27: "Неисправность цепи синхроимпульса",
+    28: "Неисправность цепи ведущего сигнала",
+    29: "Плохой контакт разъёма (папа) параллельного кабеля",
+    30: "Плохой контакт разъёма (мама) параллельного кабеля",
+    31: "Параллельный кабель подключён плохо",
+    32: "Несогласованность АКБ в параллельной системе",
+    33: "Несогласованность сети в параллельной системе",
+    34: "Несогласованность байпаса в параллельной системе",
+    35: "Разные модели в параллельной системе",
+    36: "Разная мощность в параллельной системе",
+    37: "Разные настройки автозапуска в параллельной системе",
+    38: "Перезаряд банки АКБ",
+    39: "Разные настройки защиты АКБ в параллельной системе",
+    40: "Разные настройки контроля АКБ в параллельной системе",
+    41: "Разные настройки запрета байпаса в параллельной системе",
+    42: "Разные настройки конвертера в параллельной системе",
+    43: "Разные верхние пороги частоты байпаса в параллельной системе",
+    44: "Разные нижние пороги частоты байпаса в параллельной системе",
+    45: "Разные верхние пороги напряжения байпаса в параллельной системе",
+    46: "Разные нижние пороги напряжения байпаса в параллельной системе",
+    47: "Разные верхние пороги частоты сети в параллельной системе",
+    48: "Разные нижние пороги частоты сети в параллельной системе",
+    49: "Разные верхние пороги напряжения сети в параллельной системе",
+    50: "Разные нижние пороги напряжения сети в параллельной системе",
+    51: "Блокировка байпаса после 3 перегрузок за 30 мин",
+    52: "Дисбаланс входного тока (3 фазы)",
+    53: "Дисбаланс входного тока от АКБ (3 фазы)",
+    54: "Дисбаланс тока инвертора",
+    55: "Предупреждение отключения программируемых розеток",
+    56: "Требуется замена АКБ",
+    57: "Аномалия входного угла фазы",
+    58: "Открыта крышка обслуживания",
+    62: "Ошибка записи EEPROM",
+}
 
 
 @dataclass(frozen=True)
@@ -123,7 +213,24 @@ def parse_qpiri(payload: bytes) -> Optional[dict]:
 
 
 def parse_qpiws(payload: bytes) -> str:
+    """Return the raw QPIWS payload (a 64-char 0/1 warning mask string)."""
     return payload.decode("ascii", errors="replace").strip()
+
+
+def decode_warnings(raw: str) -> str:
+    """Turn the QPIWS bit-mask string into a comma-separated RU warning list.
+
+    The first character of the mask is warning #1, the 64th is #64. Only bits
+    set to '1' are reported. Returns "Нет" when no warnings are active.
+    """
+    labels = [
+        WARNING_NAMES[idx]
+        for idx, bit in enumerate(raw, start=1)
+        if bit == "1" and idx in WARNING_NAMES
+    ]
+    if not labels:
+        return "Нет"
+    return ", ".join(labels)
 
 
 def build_state(
@@ -147,8 +254,11 @@ def build_state(
     def pick(s: str, i: int) -> str:
         return s[i] if len(s) > i else ""
 
+    def on_off(bit: str) -> str:
+        return "Да" if bit == "1" else "Нет"
+
     return {
-        "Inverter_mode":                str(mode),
+        "Inverter_mode":                MODE_NAMES.get(mode, str(mode)),
         "AC_grid_voltage":              f"{qpigs['voltage_grid']:.1f}",
         "AC_grid_frequency":            f"{qpigs['freq_grid']:.1f}",
         "AC_out_voltage":               f"{qpigs['voltage_out']:.1f}",
@@ -168,17 +278,21 @@ def build_state(
         "Battery_voltage":              f"{qpigs['voltage_batt']:.2f}",
         "Battery_charge_current":       str(qpigs["batt_charge_current"]),
         "Battery_discharge_current":    str(qpigs["batt_discharge_current"]),
-        "Load_status_on":               pick(status, 3),
-        "SCC_charge_on":                pick(status, 6),
-        "AC_charge_on":                 pick(status, 7),
+        "Load_status_on":               on_off(pick(status, 3)),
+        "SCC_charge_on":                on_off(pick(status, 6)),
+        "AC_charge_on":                 on_off(pick(status, 7)),
         "Battery_recharge_voltage":     f"{qpiri['batt_recharge_voltage']:.1f}",
         "Battery_under_voltage":        f"{qpiri['batt_under_voltage']:.1f}",
         "Battery_bulk_voltage":         f"{qpiri['batt_bulk_voltage']:.1f}",
         "Battery_float_voltage":        f"{qpiri['batt_float_voltage']:.1f}",
         "Max_grid_charge_current":      str(qpiri["max_grid_charge_current"]),
         "Max_charge_current":           str(qpiri["max_charge_current"]),
-        "Out_source_priority":          str(qpiri["out_source_priority"]),
-        "Charger_source_priority":      str(qpiri["charger_source_priority"]),
+        "Out_source_priority":          OUT_SOURCE_PRIORITY_NAMES.get(
+            qpiri["out_source_priority"], str(qpiri["out_source_priority"])
+        ),
+        "Charger_source_priority":      CHARGER_SOURCE_PRIORITY_NAMES.get(
+            qpiri["charger_source_priority"], str(qpiri["charger_source_priority"])
+        ),
         "Battery_redischarge_voltage":  f"{qpiri['batt_redischarge_voltage']:.1f}",
-        "Warnings":                     warnings,
+        "Warnings":                     decode_warnings(warnings),
     }
