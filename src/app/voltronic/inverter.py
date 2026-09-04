@@ -46,6 +46,13 @@ class Inverter:
                 pass
             self._fd = None
 
+    def __enter__(self) -> "Inverter":
+        self.open()
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self.close()
+
     def _configure_tty(self, fd: int) -> None:
         """Best-effort 2400 8N1 setup — silently skips non-TTY devices (hidraw)."""
         try:
