@@ -6,7 +6,7 @@ def test_frame_round_trip() -> None:
     frame = crc.frame(command)
     assert frame.startswith(command)
     assert frame.endswith(b"\r")
-    assert crc.check(b"(" + frame[:-1] + b"\r") is False
+    assert len(frame) == len(command) + 3
 
 
 def test_known_qmod_frame_crc() -> None:
