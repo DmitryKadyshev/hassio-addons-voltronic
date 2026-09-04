@@ -13,7 +13,6 @@ permissions:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  VERSION: "0.4.2"
 
 jobs:
   build:
@@ -22,6 +21,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Read add-on version
+        id: version
+        shell: bash
+        run: echo "version=$(sed -n 's/^version: *[\"'"'"']\([^\"'"'"']*\)[\"'"'"'].*$/\1/p' config.yaml)" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -51,12 +55,12 @@ jobs:
             BUILD_NAME=Voltronic
             BUILD_REF=${{ github.sha }}
             BUILD_REPOSITORY=${{ github.repository }}
-            BUILD_VERSION=${{ env.VERSION }}
+            BUILD_VERSION=${{ steps.version.outputs.version }}
           push: ${{ github.event_name == 'push' }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: |
-            org.opencontainers.image.version=${{ env.VERSION }}
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
