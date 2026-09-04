@@ -8,11 +8,11 @@ import sys
 import threading
 
 from . import parser
-from .config import Config
+from .config import Config, ConfigError
 from .inverter import Inverter
 from .mqtt import MqttClient
 
-SW_VERSION = "0.4.5"
+SW_VERSION = "0.4.6"
 
 log = logging.getLogger("voltronic")
 
@@ -50,7 +50,12 @@ def main() -> int:
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    cfg = Config.load()
+    try:
+        cfg = Config.load()
+    except ConfigError as exc:
+        log.error("invalid configuration: %s", exc)
+        return 2
+
     log.info("voltronic %s starting; poll every %ds via %s", SW_VERSION, cfg.run_interval, cfg.device)
 
     stop = threading.Event()
