@@ -46,6 +46,13 @@ class Inverter:
                 pass
             self._fd = None
 
+    def __enter__(self) -> "Inverter":
+        self.open()
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self.close()
+
     def _configure_tty(self, fd: int) -> None:
         """Best-effort 2400 8N1 setup — silently skips non-TTY devices (hidraw)."""
         try:
@@ -112,16 +119,9 @@ class Inverter:
                 break
 
         if not buf or buf[0:1] != b"(" or buf[-1:] != b"\r":
-            self._fail_query(cmd, f"bad framing: {bytes(buf)!r}")
+            self._fail_query(cmd, f"bad framing (received {len(buf)} bytes)")
             return None
         if not crc.check(bytes(buf)):
-            self._fail_query(cmd, f"CRC mismatch: {bytes(buf)!r}")
+            self._fail_query(cmd, f"CRC mismatch (received {len(buf)} bytes)")
             return None
         return bytes(buf[1:-3])  # strip leading '(' and trailing CRC+CR
-
-    def __enter__(self) -> "Inverter":
-        self.open()
-        return self
-
-    def __exit__(self, *exc) -> None:
-        self.close()

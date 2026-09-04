@@ -12,7 +12,7 @@ from .config import Config
 from .inverter import Inverter
 from .mqtt import MqttClient
 
-SW_VERSION = "0.4.4"
+SW_VERSION = "0.4.5"
 
 log = logging.getLogger("REDACTED")
 
@@ -29,7 +29,7 @@ def _poll_once(inv: Inverter, cfg: Config) -> tuple[int, dict, dict, str] | None
         return None
     qpigs = parser.parse_qpigs(qpigs_raw)
     if qpigs is None:
-        log.warning("QPIGS parse failed: %r", qpigs_raw)
+        log.warning("QPIGS parse failed")
         return None
 
     qpiri_raw = inv.query("QPIRI", cfg.qpiri)
@@ -37,7 +37,7 @@ def _poll_once(inv: Inverter, cfg: Config) -> tuple[int, dict, dict, str] | None
         return None
     qpiri = parser.parse_qpiri(qpiri_raw)
     if qpiri is None:
-        log.warning("QPIRI parse failed: %r", qpiri_raw)
+        log.warning("QPIRI parse failed")
         return None
 
     qpiws_raw = inv.query("QPIWS", cfg.qpiws)
