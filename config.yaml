@@ -1,11 +1,11 @@
 name: "Voltronic"
-version: "0.4.4"
+version: "0.4.5"
 slug: "REDACTED-addon"
 description: "Monitor and control Voltronic based inverters from Home Assistant."
 init: false
 udev: true
-hassio_api: true
-homeassistant_api: true
+hassio_api: false
+homeassistant_api: false
 devices:
   - /dev/hidraw0
   - /dev/hidraw1
@@ -44,5 +44,5 @@ options:
   mqtt_port: 1883
   mqtt_topic: homeassistant
   devicename: REDACTED
-  mqtt_username: REDACTED
-  mqtt_password: REDACTED
+  mqtt_username: ""
+  mqtt_password: ""
