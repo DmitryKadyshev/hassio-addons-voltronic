@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from REDACTED.config import Config, ConfigError
+from voltronic.config import Config, ConfigError
 
 
 def valid_options():
@@ -11,7 +11,7 @@ def valid_options():
         "amperage_factor": 1.0, "watt_factor": 1.0,
         "qpiri": 97, "qpiws": 36, "qmod": 5, "qpigs": 110,
         "mqtt_server": "mosquitto", "mqtt_port": 1883,
-        "mqtt_topic": "homeassistant", "devicename": "REDACTED",
+        "mqtt_topic": "homeassistant", "devicename": "voltronic",
         "mqtt_username": "", "mqtt_password": "",
     }
 
