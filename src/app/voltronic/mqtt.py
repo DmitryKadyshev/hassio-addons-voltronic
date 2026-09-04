@@ -35,6 +35,7 @@ class MqttClient:
         self._devicename = devicename
         self._availability_topic = f"{base_topic}/{devicename}/availability"
         self._connected = False
+        self._connection_generation = 0
 
         # paho-mqtt v2 requires an explicit callback_api_version. Prefer VERSION2;
         # fall back to unspecified for older builds that pre-date that enum.
@@ -70,6 +71,11 @@ class MqttClient:
     @property
     def is_connected(self) -> bool:
         return self._connected
+
+    @property
+    def connection_generation(self) -> int:
+        """Incremented after every successful broker connection."""
+        return self._connection_generation
 
     def publish(self, topic: str, payload: str, retain: bool = True) -> None:
         self._client.publish(topic, payload, qos=0, retain=retain)
@@ -114,8 +120,9 @@ class MqttClient:
         if getattr(reason_code, "is_failure", False):
             log.error("connect failed: %s", reason_code)
             return
-        log.info("connected (rc=%s)", reason_code)
         self._connected = True
+        self._connection_generation += 1
+        log.info("connected (rc=%s, generation=%d)", reason_code, self._connection_generation)
         client.publish(self._availability_topic, "online", qos=0, retain=True)
 
     def _on_disconnect(self, client, userdata, *args, **kwargs):
