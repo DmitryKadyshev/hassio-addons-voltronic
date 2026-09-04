@@ -12,9 +12,9 @@ from .config import Config, ConfigError
 from .inverter import Inverter
 from .mqtt import MqttClient
 
-SW_VERSION = "0.4.6"
+SW_VERSION = "0.4.7"
 
-log = logging.getLogger("REDACTED")
+log = logging.getLogger("voltronic")
 
 
 def _poll_once(inv: Inverter, cfg: Config) -> tuple[int, dict, dict, str] | None:
@@ -56,7 +56,7 @@ def main() -> int:
         log.error("invalid configuration: %s", exc)
         return 2
 
-    log.info("REDACTED %s starting; poll every %ds via %s", SW_VERSION, cfg.run_interval, cfg.device)
+    log.info("Voltronic %s starting; poll every %ds via %s", SW_VERSION, cfg.run_interval, cfg.device)
 
     stop = threading.Event()
     signal.signal(signal.SIGTERM, lambda *_: stop.set())
