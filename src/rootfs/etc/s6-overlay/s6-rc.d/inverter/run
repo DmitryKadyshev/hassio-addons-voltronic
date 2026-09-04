@@ -6,4 +6,4 @@
 
 bashio::log.info 'Starting Voltronic...'
 
-exec python3 -m REDACTED
+exec python3 -m voltronic

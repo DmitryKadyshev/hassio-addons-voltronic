@@ -1,4 +1,4 @@
-from REDACTED import crc
+from voltronic import crc
 
 
 def test_frame_round_trip() -> None:

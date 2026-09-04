@@ -1,6 +1,6 @@
 name: "Voltronic"
-version: "0.4.6"
-slug: "REDACTED-addon"
+version: "0.4.7"
+slug: "voltronic-addon"
 description: "Monitor and control Voltronic based inverters from Home Assistant."
 init: false
 udev: true
@@ -43,6 +43,6 @@ options:
   mqtt_server: mosquitto
   mqtt_port: 1883
   mqtt_topic: homeassistant
-  devicename: REDACTED
+  devicename: "voltronic"
   mqtt_username: ""
   mqtt_password: ""
