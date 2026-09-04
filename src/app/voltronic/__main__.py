@@ -12,7 +12,7 @@ from .config import Config
 from .inverter import Inverter
 from .mqtt import MqttClient
 
-SW_VERSION = "0.4.1"
+SW_VERSION = "0.4.2"
 
 log = logging.getLogger("voltronic")
 
