@@ -66,6 +66,11 @@ class Inverter:
         )
         termios.tcflush(fd, termios.TCOFLUSH)
 
+    def _fail_query(self, cmd: str, reason: str) -> None:
+        """Discard a potentially desynchronised connection before the next query."""
+        log.warning("%s query failed: %s; reconnecting on next query", cmd, reason)
+        self.close()
+
     def query(self, cmd: str, expected_len: int) -> Optional[bytes]:
         """Send `cmd`, return the raw payload between '(' and CRC, or None on failure."""
         if self._fd is None:
@@ -85,7 +90,7 @@ class Inverter:
         while len(buf) < expected_len:
             remaining = deadline - time.monotonic()
             if remaining <= 0:
-                log.warning("%s read timeout after %d/%d bytes", cmd, len(buf), expected_len)
+                self._fail_query(cmd, f"read timeout after {len(buf)}/{expected_len} bytes")
                 return None
             r, _, _ = select.select([self._fd], [], [], remaining)
             if not r:
@@ -107,10 +112,10 @@ class Inverter:
                 break
 
         if not buf or buf[0:1] != b"(" or buf[-1:] != b"\r":
-            log.warning("%s bad framing: %r", cmd, bytes(buf))
+            self._fail_query(cmd, f"bad framing: {bytes(buf)!r}")
             return None
         if not crc.check(bytes(buf)):
-            log.warning("%s CRC mismatch: %r", cmd, bytes(buf))
+            self._fail_query(cmd, f"CRC mismatch: {bytes(buf)!r}")
             return None
         return bytes(buf[1:-3])  # strip leading '(' and trailing CRC+CR
 
