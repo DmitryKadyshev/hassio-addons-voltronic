@@ -31,11 +31,11 @@ LABEL \
 
 RUN apk add --no-cache python3 py3-paho-mqtt
 
-COPY src/app/ /opt/REDACTED/
+COPY src/app/ /opt/voltronic/
 COPY src/rootfs/ /
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONPATH=/opt/REDACTED
+    PYTHONPATH=/opt/voltronic
 
 ENTRYPOINT ["/init"]
