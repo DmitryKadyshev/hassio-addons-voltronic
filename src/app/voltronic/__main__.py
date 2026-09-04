@@ -12,7 +12,7 @@ from .config import Config
 from .inverter import Inverter
 from .mqtt import MqttClient
 
-SW_VERSION = "0.4.0"
+SW_VERSION = "0.4.1"
 
 log = logging.getLogger("REDACTED")
 
@@ -67,13 +67,13 @@ def main() -> int:
         devicename=cfg.devicename,
     )
 
-    discovery_sent = False
+    discovery_generation = 0
     try:
         mqttc.connect()
         while not stop.is_set():
-            if mqttc.is_connected and not discovery_sent:
+            if mqttc.is_connected and mqttc.connection_generation != discovery_generation:
                 mqttc.publish_discovery(parser.SENSORS, SW_VERSION)
-                discovery_sent = True
+                discovery_generation = mqttc.connection_generation
 
             snapshot = _poll_once(inv, cfg)
             if snapshot is not None:
