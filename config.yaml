@@ -1,5 +1,5 @@
 name: "Voltronic"
-version: "0.4.1"
+version: "0.4.2"
 slug: "REDACTED-addon"
 description: "Monitor and control Voltronic based inverters from Home Assistant."
 init: false
@@ -45,5 +45,4 @@ options:
   mqtt_topic: homeassistant
   devicename: REDACTED
   mqtt_username: REDACTED
-
   mqtt_password: REDACTED
