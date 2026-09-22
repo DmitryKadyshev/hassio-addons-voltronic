@@ -18,6 +18,7 @@ class ConfigError(ValueError):
 @dataclass(frozen=True)
 class Config:
     device: str
+    auto_detect_device: bool
     run_interval: int
     amperage_factor: float
     watt_factor: float
@@ -46,7 +47,7 @@ class Config:
             raise ConfigError("configuration root must be a JSON object")
 
         required = (
-            "device", "run_interval", "amperage_factor", "watt_factor",
+            "device", "auto_detect_device", "run_interval", "amperage_factor", "watt_factor",
             "qpiri", "qpiws", "qmod", "qpigs", "mqtt_server", "mqtt_port",
             "mqtt_topic", "devicename", "mqtt_username", "mqtt_password",
         )
@@ -56,7 +57,8 @@ class Config:
 
         try:
             cfg = cls(
-                device=raw["device"], run_interval=int(raw["run_interval"]),
+                device=raw["device"], auto_detect_device=raw["auto_detect_device"],
+                run_interval=int(raw["run_interval"]),
                 amperage_factor=float(raw["amperage_factor"]), watt_factor=float(raw["watt_factor"]),
                 qpiri=int(raw["qpiri"]), qpiws=int(raw["qpiws"]),
                 qmod=int(raw["qmod"]), qpigs=int(raw["qpigs"]),
@@ -73,6 +75,8 @@ class Config:
     def validate(self) -> None:
         if not isinstance(self.device, str) or not self.device.startswith(("/dev/hidraw", "/dev/ttyUSB")):
             raise ConfigError("device must be a /dev/hidraw* or /dev/ttyUSB* path")
+        if not isinstance(self.auto_detect_device, bool):
+            raise ConfigError("auto_detect_device must be a boolean")
         if self.run_interval < 1:
             raise ConfigError("run_interval must be at least 1 second")
         if self.amperage_factor <= 0 or self.watt_factor <= 0:
