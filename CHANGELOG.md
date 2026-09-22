@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.8 - 2026-09-22
+
+- Added optional startup auto-detection of the Voltronic inverter across all `/dev/hidraw*` devices.
+- Auto-detection probes each device with `QMOD` and accepts only a valid Voltronic protocol response.
+- Added the `auto_detect_device` boolean configuration option; disabled by default.
+
+
 All notable changes to this Home Assistant add-on are documented here.
 
 ## 0.4.7 - 2026-09-04
