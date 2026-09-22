@@ -8,6 +8,7 @@ Monitor and control Voltronic-based inverters from Home Assistant.
 - Publishes inverter data to MQTT.
 - Integrates with Home Assistant through MQTT discovery.
 - Automatically reconnects to the inverter and MQTT broker after communication failures.
+- Optionally scans all `/dev/hidraw*` devices at startup and selects the first device that answers with a valid Voltronic `QMOD` response.
 - Supports the Home Assistant architectures configured by the add-on.
 
 ## Requirements
@@ -31,7 +32,8 @@ The add-on configuration is validated when it starts. The main settings are:
 
 | Option | Description | Example |
 | --- | --- | --- |
-| `device` | HID device used by the inverter | `/dev/hidraw0` |
+| `device` | HID device used by the inverter when auto-detection is disabled | `/dev/hidraw0` |
+| `auto_detect_device` | Scan all `/dev/hidraw*` devices at startup and select a device with a valid Voltronic response | `false` |
 | `run_interval` | Polling interval in seconds | `5` |
 | `amperage_factor` | Current scaling factor | `1.0` |
 | `watt_factor` | Power scaling factor | `1.0` |
@@ -64,7 +66,7 @@ The GitHub Actions test workflow runs the same pytest suite on pull requests and
 
 ### The inverter is not detected
 
-Check that the correct HID device is configured and that Home Assistant has access to it. On the host, inspect available devices with:
+If `auto_detect_device` is enabled, the add-on probes every `/dev/hidraw*` device at startup using the Voltronic `QMOD` command and stops at the first valid response. If no valid response is found, the add-on exits and logs the failure. Otherwise, when auto-detection is disabled, check that the configured HID device is correct and that Home Assistant has access to it. On the host, inspect available devices with:
 
 ```bash
 ls -l /dev/hidraw*

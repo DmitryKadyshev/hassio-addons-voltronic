@@ -7,7 +7,7 @@ from voltronic.config import Config, ConfigError
 
 def valid_options():
     return {
-        "device": "/dev/hidraw0", "run_interval": 5,
+        "device": "/dev/hidraw0", "auto_detect_device": False, "run_interval": 5,
         "amperage_factor": 1.0, "watt_factor": 1.0,
         "qpiri": 97, "qpiws": 36, "qmod": 5, "qpigs": 110,
         "mqtt_server": "mosquitto", "mqtt_port": 1883,
@@ -25,6 +25,7 @@ def write_options(tmp_path, data):
 def test_load_valid_config(tmp_path):
     cfg = Config.load(write_options(tmp_path, valid_options()))
     assert cfg.device == "/dev/hidraw0"
+    assert cfg.auto_detect_device is False
     assert cfg.mqtt_port == 1883
 
 
@@ -62,5 +63,12 @@ def test_rejects_partial_mqtt_credentials(tmp_path):
 def test_rejects_unsafe_device_path(tmp_path):
     data = valid_options()
     data["device"] = "/dev/sda"
+    with pytest.raises(ConfigError):
+        Config.load(write_options(tmp_path, data))
+
+
+def test_rejects_non_boolean_auto_detect_device(tmp_path):
+    data = valid_options()
+    data["auto_detect_device"] = "true"
     with pytest.raises(ConfigError):
         Config.load(write_options(tmp_path, data))
