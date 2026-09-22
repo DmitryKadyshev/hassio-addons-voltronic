@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import glob
 import logging
 import signal
 import sys
@@ -12,9 +13,44 @@ from .config import Config, ConfigError
 from .inverter import Inverter
 from .mqtt import MqttClient
 
-SW_VERSION = "0.4.7"
+SW_VERSION = "0.4.8"
 
 log = logging.getLogger("voltronic")
+
+
+def _hidraw_sort_key(device: str) -> tuple[int, str]:
+    """Sort /dev/hidraw devices by numeric suffix, then by name."""
+    suffix = device.rsplit("hidraw", 1)[-1]
+    try:
+        return int(suffix), device
+    except ValueError:
+        return sys.maxsize, device
+
+
+def _find_hidraw_device(cfg: Config) -> str | None:
+    """Probe all /dev/hidraw* devices and return the first valid Voltronic endpoint."""
+    devices = sorted(glob.glob("/dev/hidraw*"), key=_hidraw_sort_key)
+    if not devices:
+        log.error("auto-detection enabled, but no /dev/hidraw* devices were found")
+        return None
+
+    log.info("auto-detection enabled; probing %d /dev/hidraw* device(s)", len(devices))
+    for device in devices:
+        probe = Inverter(device)
+        try:
+            payload = probe.query("QMOD", cfg.qmod)
+            mode = parser.parse_qmod(payload) if payload is not None else 0
+            if mode:
+                log.info("auto-detection found Voltronic inverter on %s", device)
+                return device
+            log.info("device %s did not return a valid Voltronic QMOD response", device)
+        except OSError as exc:
+            log.info("device %s could not be opened: %s", device, exc)
+        finally:
+            probe.close()
+
+    log.error("auto-detection did not find a Voltronic inverter")
+    return None
 
 
 def _poll_once(inv: Inverter, cfg: Config) -> tuple[int, dict, dict, str] | None:
@@ -56,13 +92,22 @@ def main() -> int:
         log.error("invalid configuration: %s", exc)
         return 2
 
-    log.info("Voltronic %s starting; poll every %ds via %s", SW_VERSION, cfg.run_interval, cfg.device)
+    selected_device = (
+        _find_hidraw_device(cfg) if cfg.auto_detect_device else cfg.device
+    )
+    if selected_device is None:
+        return 1
+
+    log.info(
+        "Voltronic %s starting; poll every %ds via %s",
+        SW_VERSION, cfg.run_interval, selected_device,
+    )
 
     stop = threading.Event()
     signal.signal(signal.SIGTERM, lambda *_: stop.set())
     signal.signal(signal.SIGINT, lambda *_: stop.set())
 
-    inv = Inverter(cfg.device)
+    inv = Inverter(selected_device)
     mqttc = MqttClient(
         host=cfg.mqtt_server,
         port=cfg.mqtt_port,
